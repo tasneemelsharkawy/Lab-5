@@ -1,19 +1,28 @@
-import unittest
-from calculator import Calculator
+name: CI Pipeline
 
-class TestCalculator(unittest.TestCase):
+on:
+  push:
+    branches:
+      - main
 
-    def setUp(self):
-        # This method is run before each test, useful for setup code.
-        self.calc = Calculator()
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-    def test_add(self):
-        # Test addition functionality
-        result = self.calc.add(3, 7)
-        self.assertEqual(result, 10)
-        
-        result = self.calc.add(-1, 1)
-        self.assertEqual(result, 0)
-        
-        result = self.calc.add(-1, -1)
-        self.assertEqual(result, -2)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run tests
+        run: |
+          python -m pytest test.py -v
